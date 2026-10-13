@@ -108,27 +108,27 @@ skill.zip + conversion dashboard
 Install directly from GitHub with the open `skills` CLI:
 
 ```bash
-npx skills add jumpifequal/customgpt-to-skill
+npx skills add jumpifequal/customGPT-to-Skill-converter
 ```
 
 Inspect what the CLI detects before installing:
 
 ```bash
-npx skills add jumpifequal/customgpt-to-skill --list
+npx skills add jumpifequal/customGPT-to-Skill-converter --list
 ```
 
 Install globally for a specific agent (identifiers are listed by the CLI):
 
 ```bash
-npx skills add jumpifequal/customgpt-to-skill -g -a codex -y
-npx skills add jumpifequal/customgpt-to-skill -g -a claude-code -y
+npx skills add jumpifequal/customGPT-to-Skill-converter -g -a codex -y
+npx skills add jumpifequal/customGPT-to-Skill-converter -g -a claude-code -y
 ```
 
 Install from a local clone:
 
 ```bash
-git clone https://github.com/jumpifequal/customgpt-to-skill.git
-cd customgpt-to-skill
+git clone https://github.com/jumpifequal/customGPT-to-Skill-converter.git
+cd customGPT-to-Skill-converter
 npx skills add .
 ```
 
@@ -228,7 +228,7 @@ It then delivers `skill.zip` and a conversion dashboard: source versus target fi
 ## Repository structure
 
 ```text
-customgpt-to-skill/
+customGPT-to-Skill-converter/
 ├── .github/
 │   └── workflows/
 │       └── validate.yml
