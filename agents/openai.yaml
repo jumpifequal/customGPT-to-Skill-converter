@@ -1,0 +1,8 @@
+interface:
+  display_name: "CustomGPT-to-Skill"
+  short_description: "Convert Custom GPT exports into validated, regression-safe Universal Skills."
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
+  default_prompt: "Use $customgpt-to-skill to convert my attached Custom GPT export into a validated Universal Skill package."
+policy:
+  allow_implicit_invocation: true
