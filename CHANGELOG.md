@@ -1,14 +1,5 @@
 # Changelog
 
-**Repository packaging (skill version unchanged: 10.7.0)**
-
-- add: GitHub repository layout — the skill package sits at the repository root; `SKILL.md`, `agents/`, `assets/`, `references/` and `scripts/` are byte-identical to the 10.7.0 skill archive.
-- add: `README.md` (English) and `README.it.md` (Italiano) covering motivation, plugin limits and when a skill derived from a Custom GPT is the better choice.
-- add: `docs/` (architecture, decision gates, runtime tools, examples) and the repository logo under `docs/assets/`.
-- add: `CONTRIBUTING.md`, `SECURITY.md`, `.gitignore`, `requirements-dev.txt`.
-- add: `tools/validate_repo.py` and GitHub Actions workflow running the repository checks plus the skill's own regression suite.
-- change: `changelog.md` renamed to `CHANGELOG.md` (GitHub convention; avoids case-insensitive filename collisions). Content below is unchanged.
-
 **10.7.0 - Human-in-Control conversion decisions**
 
 - add: decision awareness — every consequential conversion choice is explained with rationale and practical consequences before the user is asked to confirm it.

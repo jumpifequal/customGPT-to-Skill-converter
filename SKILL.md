@@ -6,7 +6,7 @@ description: Convert a user-provided Custom GPT export or equivalent bundle into
 # CustomGPT-to-Skill
 
 Author: Enrico Frumento  
-Version: 10.7.0
+Version: 1.0.8
 
 ## A. IDENTITY BLOCK
 - **Role:** Cross-runtime Custom GPT to Universal Skill conversion engineer.
@@ -80,7 +80,7 @@ Execute these phases in order.
    - present the Decision Awareness Guide required by `references/human-control.md`;
    - do not ask for a choice until rationale and practical consequences have been shown;
    - allow one explicit `CONFIRM ALL RECOMMENDED` batch approval only when every proposed value has already been explained and no `NO DEFAULT`, destructive, or lossy choice requires separate acknowledgement;
-   - write every confirmed choice into `references/conversion-decisions.json`;
+   - write every confirmed choice into a conversion-workspace decision record outside the generated Skill;
    - generate and show the Conversion Parameter Report before target generation.
 
 3. **Control-plane detection and human gate**
@@ -91,7 +91,7 @@ Execute these phases in order.
    - explain the choice between source fidelity and runtime executability, then require `DUAL_RUNTIME_FIDELITY`, `ORIGINAL_ONLY_RUNTIME_RISK`, or `CUSTOM_CONTROL_PLANE`;
    - recommend `DUAL_RUNTIME_FIDELITY`: preserve every canonical original byte-for-byte and use either `ORIGINAL_NATIVE` when the target can reliably consume the original format or `DERIVED_MIRROR` when a runtime-native representation is required;
    - do not silently choose original-only preservation for an operational artifact; if selected, require explicit runtime-risk acknowledgement;
-   - generate `references/control-plane-map.json` and `references/control-plane-parity.json`, then run `scripts/control_plane_guard.py` before release;
+   - generate control-plane map and parity records in the conversion workspace, run `scripts/control_plane_guard.py` against the staged target before release, and exclude those conversion-only records from the delivered Skill;
    - preserve source-defined bootstrap order and precedence explicitly in the generated Skill; a generic read-all rule does not replace stronger source ordering semantics.
 
 4. **Behavioral invariant extraction**
@@ -179,6 +179,9 @@ Execute these phases in order.
 
 14. **Package size and hygiene**
     - exclude caches, bytecode, temporary/editor files, coverage artifacts, local virtual environments, and conversion workspaces;
+   - enforce a clean-room target: the installed Skill must be self-contained and present-tense, with no converter identity, conversion provenance, decision records, parameter reports, migration dashboards, historical comparison claims, or claims of remembered earlier GPT context; keep such evidence outside the deliverable in the conversion workspace;
+   - preserve source Knowledge originals faithfully, but do not promote historical GPT-specific wrapper instructions into the active Skill control plane; do not strip or rewrite historical statements within preserved originals;
+   - before release, audit generated operational instructions, metadata and package file names for conversion residue, and remove or rewrite residue without changing active behavioural invariants;
     - package a single skill directory only;
     - ensure every referenced local file exists and every bundled file is intentionally part of the final package;
     - run `scripts/package_size_guard.py` before final packaging;
@@ -188,7 +191,7 @@ Execute these phases in order.
     - after every size-reduction step, rerun the size guard and all preservation checks.
 
 15. **Validation and repair**
-    - run structural validation before packaging;
+    - run structural validation and clean-room residue validation before packaging;
     - run self-regression checks;
     - validate generated metadata, icon safety, referenced paths, Knowledge completeness, script headers, and package hygiene;
     - run a source-to-target manifest comparison and fail on unexplained omissions;
@@ -249,7 +252,7 @@ Execute these phases in order.
 ## D. OUTPUT CONTRACT
 The runtime result of this skill must be:
 1. a downloadable `skill.zip`;
-2. a concise conversion dashboard with:
+2. a concise conversion dashboard in the assistant response or external workspace (never inside the installed Skill) with:
    - source inventory summary;
    - Conversion Parameter Report with Parameter, Selected value, Origin, Rationale, and Practical consequence;
    - behavioral invariants preserved;

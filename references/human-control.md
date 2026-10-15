@@ -119,9 +119,9 @@ At minimum include, when relevant:
 
 ## Persistent evidence
 
-Write the same report to `references/conversion-parameters.md` in the generated Skill when the target package contains conversion-decision evidence.
+Keep the parameter report in the external conversion workspace only.
 
-Store the machine-readable choices in `references/conversion-decisions.json`.
+Store the machine-readable choices in that same workspace, never in the generated Skill.
 
 The Markdown report is user-readable evidence; the JSON record is the deterministic validation source.
 

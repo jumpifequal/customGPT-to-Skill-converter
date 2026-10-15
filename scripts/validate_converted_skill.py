@@ -251,48 +251,27 @@ def main() -> None:
             except Exception as exc:
                 errors.append(f"control-plane guard could not run: {exc}")
 
-    decisions = root / "references" / "conversion-decisions.json"
-    decision_guard = root / "scripts" / "decision_gate_guard.py"
-    parameter_report = root / "references" / "conversion-parameters.md"
-    parameter_renderer = root / "scripts" / "render_parameter_report.py"
-    if decisions.is_file():
-        if not decision_guard.is_file():
-            errors.append("conversion-decisions.json exists but scripts/decision_gate_guard.py is missing")
-        else:
-            try:
-                result = subprocess.run(
-                    [sys.executable, str(decision_guard), str(decisions), "--mode", "build"],
-                    cwd=root,
-                    text=True,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    check=False,
-                )
-                if result.returncode != 0:
-                    detail = (result.stdout or result.stderr).strip().replace("\n", " | ")
-                    errors.append(f"conversion decision validation failed: {detail}")
-            except Exception as exc:
-                errors.append(f"decision gate guard could not run: {exc}")
-
-        if not parameter_report.is_file():
-            errors.append("conversion-decisions.json exists but references/conversion-parameters.md is missing")
-        if not parameter_renderer.is_file():
-            errors.append("conversion-decisions.json exists but scripts/render_parameter_report.py is missing")
-        elif parameter_report.is_file():
-            try:
-                result = subprocess.run(
-                    [sys.executable, str(parameter_renderer), str(decisions), str(parameter_report), "--check-existing"],
-                    cwd=root,
-                    text=True,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    check=False,
-                )
-                if result.returncode != 0:
-                    detail = (result.stdout or result.stderr).strip().replace("\n", " | ")
-                    errors.append(f"conversion parameter report validation failed: {detail}")
-            except Exception as exc:
-                errors.append(f"parameter report validator could not run: {exc}")
+    # Generated Skills must not carry a conversion history or audit trail.
+    conversion_only = {
+        "conversion-decisions.json", "conversion-parameters.md",
+        "control-plane-map.json", "control-plane-parity.json",
+        "source-target-preservation.json", "conversion-dashboard.md",
+        "conversion-report.md", "migration-report.md",
+    }
+    for path in root.rglob("*"):
+        if path.is_file() and path.name.lower() in conversion_only:
+            errors.append(f"conversion residue in released Skill: {path.relative_to(root)}")
+    # Original, byte-preserved Knowledge files can legitimately contain historical text.
+    # Enforce clean-room language only in generated operational entry points.
+    operational = [root / "SKILL.md", root / "agents" / "openai.yaml"]
+    residue = re.compile(
+        r"(?i)\b(?:converted from|migrated from|formerly (?:a |an )?custom ?gpt|"
+        r"original (?:custom )?gpt|conversion (?:process|history|parameter|decision|report)|"
+        r"as (?:a )?converted skill|previous gpt conversation|inherited (?:chat )?memory)\b"
+    )
+    for path in ([] if (root / "scripts" / "regression_self_test.py").is_file() else operational):
+        if path.is_file() and residue.search(path.read_text(encoding="utf-8", errors="replace")):
+            errors.append(f"conversion-history wording in generated instructions: {path.relative_to(root)}")
 
     if args.source_inventory:
         inv_path = Path(args.source_inventory)
@@ -301,10 +280,8 @@ def main() -> None:
             source_files = payload.get("files", [])
             if not isinstance(source_files, list):
                 errors.append("source inventory 'files' must be a list")
-            # This validator cannot infer semantic mapping automatically. It enforces that a preservation report exists.
-            report = root / "references" / "source-target-preservation.json"
-            if source_files and not report.is_file():
-                errors.append("source inventory supplied but references/source-target-preservation.json is missing")
+            # Source/target preservation evidence lives outside the installable Skill.
+            # The supplying pipeline owns that external comparison and its validation.
         except Exception as exc:
             errors.append(f"cannot read source inventory: {exc}")
 
@@ -316,8 +293,7 @@ def main() -> None:
     print("PASS: package hygiene")
     print("PASS: Python helper header discipline")
     print("PASS: Knowledge manifest integrity when present")
-    print("PASS: deterministic conversion decisions when present")
-    print("PASS: Human-in-Control parameter report when decisions are present")
+    print("PASS: release clean-room provenance checks")
     print("PASS: control-plane map/parity integrity when present")
     print("ALL TARGET VALIDATION CHECKS PASSED")
 

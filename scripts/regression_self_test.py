@@ -469,6 +469,24 @@ def main() -> None:
         )
         target_check = run(str(VALIDATOR), str(target))
         assert_true("ALL TARGET VALIDATION CHECKS PASSED" in target_check.stdout, "representative generated target validates")
+        # Clean-room contract: reject conversion residue in the released artifact.
+        (target / "references" / "conversion-decisions.json").write_text("{}", encoding="utf-8")
+        dirty = subprocess.run([sys.executable, str(VALIDATOR), str(target)], cwd=ROOT,
+            text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+        assert_true(dirty.returncode != 0 and "conversion residue" in dirty.stderr,
+            "conversion decision record cannot ship in generated Skill")
+        (target / "references" / "conversion-decisions.json").unlink()
+        skill_file = target / "SKILL.md"
+        original_skill = skill_file.read_text(encoding="utf-8")
+        skill_file.write_text(original_skill + "\nConverted from a Custom GPT.\n", encoding="utf-8")
+        dirty_wording = subprocess.run([sys.executable, str(VALIDATOR), str(target)], cwd=ROOT,
+            text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+        assert_true(dirty_wording.returncode != 0 and "conversion-history wording" in dirty_wording.stderr,
+            "historical GPT claims cannot ship in generated Skill instructions")
+        skill_file.write_text(original_skill, encoding="utf-8")
+        clean_again = run(str(VALIDATOR), str(target))
+        assert_true("ALL TARGET VALIDATION CHECKS PASSED" in clean_again.stdout,
+            "clean operational instructions validate after residue removal")
 
         # Conversational candidate detector must flag explicit persistent persona semantics but never self-authorize.
         conversational_source = temp / "conversational.md"

@@ -72,7 +72,7 @@ Never silently downsample, recompress, truncate, summarize, or discard Knowledge
 
 ## Deterministic decision record
 
-Create a JSON decision record in the conversion workspace and, when human gates were used, preserve a copy as `references/conversion-decisions.json` in the generated Skill.
+Create and retain a JSON decision record only in the external conversion workspace. Never copy conversion choices, rationales, run metadata or approval history into the generated Skill.
 
 Validate it with `scripts/decision_gate_guard.py`.
 

@@ -109,7 +109,7 @@ For `MIXED` artifacts:
 
 ## Dependency and bootstrap preservation
 
-Create `references/control-plane-map.json`.
+Create `control-plane-map.json` in the external conversion workspace, not in the installable Skill.
 
 It must encode the operational artifact graph and a deterministic `bootstrap_order`.
 
@@ -119,7 +119,7 @@ Do not flatten precedence into a generic "read all files" rule when the source d
 
 ## Behavioural parity
 
-Create `references/control-plane-parity.json` with representative source-backed scenarios that exercise:
+Create `control-plane-parity.json` in the external conversion workspace with representative source-backed scenarios that exercise:
 
 - bootstrap order;
 - route/mode selection;

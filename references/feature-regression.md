@@ -48,3 +48,7 @@ This ledger is normative for feature evolution. Update it before shipping any ma
 
 ## Backward-compatibility rule
 Feature additions must not weaken source preservation, Knowledge byte fidelity, DOCX authority rules, Human-in-Control rationale/confirmation, parameter-report traceability, decision-gate traceability, package-size gating, icon validity, metadata path integrity, package hygiene, coding discipline, human confirmation for conversational classification, host-continuity boundaries, or evidence-backed validation.
+
+## Clean-room generated Skill invariant
+
+The installed Skill starts from its present operational instructions and visible user input. Conversion decisions, historical reports, provenance audit files, GPT-origin claims, and implied prior chat memory must not be embedded in generated operational instructions or release ZIP. Preserve canonical source Knowledge byte-for-byte, even if it contains historical wording; keep conversion evidence separately in the conversion workspace. The package validator must reject generated conversion-only artifacts and conversion-history claims in SKILL.md or agents/openai.yaml.
